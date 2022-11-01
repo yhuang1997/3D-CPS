@@ -1,5 +1,7 @@
 # 3D-CPS
 Codes for the paper: ["3D Cross Pseudo Supervision (3D-CPS): A semi-supervised nnU-Net architecture for abdominal organ segmentation"](https://arxiv.org/abs/2209.08939) by Yongzhi Huang*, Hanwen Zhang*, Yan Yan and Haseeb Hassan.
+
+![3D-CPS](https://github.com/yhuang1997/3D-CPS/blob/master/3d_cps.png)
 # Dataset and Challenge
 
 [Fast and Low-resource semi-supervised Abdominal oRgan sEgmentation in CT (FLARE 2022)](https://flare22.grand-challenge.org/)
