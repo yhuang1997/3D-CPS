@@ -169,7 +169,6 @@ class nnUNetTrainerV2_SSL(nnUNetTrainerV2):
                         "INFO: Not unpacking data! Training may be slow due to that. Pray you are not using 2d or you "
                         "will wait all winter for your model to finish!")
 
-                # TODO: 这个地方先不动, 看看tr_gen能不能直接用到unlabeled上边，要是因为没有label而报错,再去拆这个函数
                 self.tr_labeled_gen, self.tr_unlabeled_gen, self.val_gen = get_moreDA_augmentation_ssl(
                     self.dl_tr_labeled, self.dl_tr_unlabeled, self.dl_val,
                     self.data_aug_params[
@@ -209,7 +208,7 @@ class nnUNetTrainerV2_SSL(nnUNetTrainerV2):
         :return:
         """
         # TODO:
-        #  co-training 需要两个network, cps中需要不同的初始化
+        #  co-training
         if self.threeD:
             conv_op = nn.Conv3d
             dropout_op = nn.Dropout3d
@@ -274,7 +273,7 @@ class nnUNetTrainerV2_SSL(nnUNetTrainerV2):
             labeled_data_dict = next(data_generator[0])
             unlabeled_data_dict = next(data_generator[1])
             labeled_data, unlabeled_data = labeled_data_dict['data'], unlabeled_data_dict['data']
-            target = labeled_data_dict['target']  # target[1] 是unlabeled 无意义！
+            target = labeled_data_dict['target']
             labeled_data = maybe_to_torch(labeled_data)
             unlabeled_data = maybe_to_torch(unlabeled_data)
             target = maybe_to_torch(target)
@@ -781,8 +780,8 @@ class nnUNetTrainerV2_SSL(nnUNetTrainerV2):
         self.maybe_update_lr(self.epoch)  # if we dont overwrite epoch then self.epoch+1 is used which is not what we
         # want at the start of the training
         ds = self.network[0].do_ds
-        self.network[0].do_ds = True  # ds是deep_supervision的意思, 应该指的是multi-output, 这里无论原network是否ds=True, 都在V2里面设置为True
-        self.network[1].do_ds = True  # ds是deep_supervision的意思, 应该指的是multi-output, 这里无论原network是否ds=True, 都在V2里面设置为True
+        self.network[0].do_ds = True
+        self.network[1].do_ds = True
 
         ###########################################################
         # Overwrite super().run_training()
@@ -924,7 +923,7 @@ class nnUNetTrainerV2_SSL(nnUNetTrainerV2):
         assert isinstance(self.network[0], tuple(valid))
         assert isinstance(self.network[1], tuple(valid))
 
-        current_mode = self.network[0].training # 两个network应该是相同的mode, 不用定义两个临时变量
+        current_mode = self.network[0].training
 
         self.network[0].eval()
         self.network[1].eval()
@@ -948,7 +947,7 @@ class nnUNetTrainerV2_SSL(nnUNetTrainerV2):
                  validation_folder_name: str = 'validation_raw', debug: bool = False, all_in_gpu: bool = False,
                  segmentation_export_kwargs: dict = None, run_postprocessing_on_folds: bool = True):
         # copy from nnUNetTrainerV2
-        ds = self.network[0].do_ds  # 两个network应该是相同的mode, 不用定义两个临时变量
+        ds = self.network[0].do_ds
         self.network[0].do_ds = False
         self.network[1].do_ds = False
 
